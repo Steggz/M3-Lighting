@@ -1,0 +1,19 @@
+function onOpen(){
+  const ui = SpreadsheetApp.getUi();
+  ui.createMenu('Data Calculations')
+    .addItem('Build Calcs Sheet','menuBuildCalcsSheet')
+    .addToUi();
+}
+
+/**
+ * CUSTOM MENU FUNCTIONS
+ */
+
+function menuBuildCalcsSheet() {
+
+}
+
+
+/**
+ * UTILITY FUNCTIONS
+ */
