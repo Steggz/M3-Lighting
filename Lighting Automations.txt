@@ -1,7 +1,9 @@
 function onOpen(){
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('Data Calculations')
-    .addItem('Build Calcs Sheet','menuBuildCalcsSheet')
+    .addItem('Build ENO Workbook','menuBuildENOWorkbook')
+    .addItem('Build ELL Workbook','menuBuildELLWorkbook')
+    .addItem('Build ENO Workbook','menuBuildWorkOrder')
     .addToUi();
 }
 
@@ -9,7 +11,15 @@ function onOpen(){
  * CUSTOM MENU FUNCTIONS
  */
 
-function menuBuildCalcsSheet() {
+function menuBuildENOWorkbook() {
+
+}
+
+function menuBuildELLWorkbook() {
+
+}
+
+function menuBuildWorkOrder() {
 
 }
 
