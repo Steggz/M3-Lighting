@@ -3,7 +3,7 @@ function onOpen(){
   ui.createMenu('Data Calculations')
     .addItem('Build ENO Workbook','menuBuildENOWorkbook')
     .addItem('Build ELL Workbook','menuBuildELLWorkbook')
-    .addItem('Build ENO Workbook','menuBuildWorkOrder')
+    .addItem('Build Work Order','menuBuildWorkOrder')
     .addToUi();
 }
 
