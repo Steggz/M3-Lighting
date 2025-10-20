@@ -2,8 +2,8 @@ function onOpen(){
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('Data Calculations')
     .addItem('Build ENO Workbook','menuBuildENOWorkbook')
-    .addItem('Build ELL Workbook','menuBuildELLWorkbook')
-    .addItem('Build Work Order','menuBuildWorkOrder')
+    //.addItem('Build ELL Workbook','menuBuildELLWorkbook')
+    //.addItem('Build Work Order','menuBuildWorkOrder')
     .addToUi();
 }
 
@@ -12,7 +12,32 @@ function onOpen(){
  */
 
 function menuBuildENOWorkbook() {
+    let sheet = SpreadsheetApp.getActiveSpreadsheet();
+    const sourceSheetName = 'Form Responses 1';
+    const destinationSheetName = 'ENO Workbook';
+    let rowLength = sheet.getLastRow();
+    //check if the sheet already exists
+    let enowbExists = sheet.getSheetByName("ENO Workbook");
+    if(enowbExists == null){
+      sheet.insertSheet();
+      sheet.renameActiveSheet("ENO Workbook");
+      buildENOWbHeaders();
+    }
 
+    const sourceSheet = sheet.getSheetByName(sourceSheetName);
+    const destinationSheet = sheet.getSheetByName(destinationSheetName);
+
+    const locValues = sourceSheet.getRange('C2:C').getValues();
+    const intExtValues = sourceSheet.getRange('B2:B').getValues();
+    const qtyValues = sourceSheet.getRange('E2:E').getValues();
+    const ctrlDevValues = sourceSheet.getRange('F2:F').getValues();
+
+  // Paste data to the destination sheet, starting from A1
+  //(row,col)
+  destinationSheet.getRange(2, 1, locValues.length, locValues[0].length).setValues(locValues);
+  destinationSheet.getRange(2, 2, intExtValues.length, intExtValues[0].length).setValues(intExtValues);
+  destinationSheet.getRange(2, 4, qtyValues.length, qtyValues[0].length).setValues(qtyValues);
+  destinationSheet.getRange(2, 5, ctrlDevValues.length, ctrlDevValues[0].length).setValues(ctrlDevValues);
 }
 
 function menuBuildELLWorkbook() {
@@ -27,3 +52,26 @@ function menuBuildWorkOrder() {
 /**
  * UTILITY FUNCTIONS
  */
+
+function buildENOWbHeaders(){
+    let sheet = SpreadsheetApp.getActiveSheet();
+    const base_headers = [['Location/Measure Notes','Interior / Exterior','Prescriptive lighting measure']];
+    const pre_headers = [['Number of existing fixtures','Existing controls',
+                          'Existing lighting type','Existing lamp wattage','Existing lamps per fixture']];
+    const post_headers = [['Number of proposed fixtures','Proposed lamp wattage',
+                           'Proposed lamps per fixtures','ENERGY STAR or DLC qualified?','Qualifying model number','Material cost per fixture','Total labor cost']];
+    let base_range = sheet.getRange('A1:C1');
+    let pre_range = sheet.getRange('D1:H1');
+    let post_range = sheet.getRange('I1:O1');
+    //build header names
+    base_range.setValues(base_headers);
+    pre_range.setValues(pre_headers);
+    post_range.setValues(post_headers)
+    //set header colors
+    base_range.setBackground('#11256f');
+    pre_range.setBackground('#126355');
+    post_range.setBackground('#0177a7');
+    //set header formats
+    sheet.getRange('A1:O1').setFontColor('white');
+    sheet.getRange('A1:O1').setWrap(true);
+}
