@@ -27,17 +27,19 @@ function menuBuildENOWorkbook() {
     const sourceSheet = sheet.getSheetByName(sourceSheetName);
     const destinationSheet = sheet.getSheetByName(destinationSheetName);
 
-    const locValues = sourceSheet.getRange('C2:C').getValues();
-    const intExtValues = sourceSheet.getRange('B2:B').getValues();
-    const qtyValues = sourceSheet.getRange('E2:E').getValues();
-    const ctrlDevValues = sourceSheet.getRange('F2:F').getValues();
+    const fixtureCodeValues = sourceSheet.getRange('J2:J').getValues();
+    const intExtValues = sourceSheet.getRange('G2:G').getValues();
+    const qtyValues = sourceSheet.getRange('I2:I').getValues();
+    const ctrlDevValues = sourceSheet.getRange('K2:K').getValues();
 
-  // Paste data to the destination sheet, starting from A1
   //(row,col)
-  destinationSheet.getRange(2, 1, locValues.length, locValues[0].length).setValues(locValues);
-  destinationSheet.getRange(2, 2, intExtValues.length, intExtValues[0].length).setValues(intExtValues);
-  destinationSheet.getRange(2, 4, qtyValues.length, qtyValues[0].length).setValues(qtyValues);
-  destinationSheet.getRange(2, 5, ctrlDevValues.length, ctrlDevValues[0].length).setValues(ctrlDevValues);
+    destinationSheet.getRange(2, 1, fixtureCodeValues.length, fixtureCodeValues[0].length).setValues(fixtureCodeValues);
+    destinationSheet.getRange(2, 2, intExtValues.length, intExtValues[0].length).setValues(intExtValues);
+    destinationSheet.getRange(2, 4, qtyValues.length, qtyValues[0].length).setValues(qtyValues);
+    destinationSheet.getRange(2, 5, ctrlDevValues.length, ctrlDevValues[0].length).setValues(ctrlDevValues);
+    destinationSheet.getRange(2, 9, qtyValues.length, qtyValues[0].length).setValues(qtyValues);
+
+    convertCodes();
 }
 
 function menuBuildELLWorkbook() {
@@ -75,3 +77,69 @@ function buildENOWbHeaders(){
     sheet.getRange('A1:O1').setFontColor('white');
     sheet.getRange('A1:O1').setWrap(true);
 }
+
+function convertCodes(){
+    let sheet = SpreadsheetApp.getActiveSpreadsheet();
+    let rowLength = sheet.getLastRow();
+    let k, code, intExt, extMeasure;
+    const sourceSheetName = 'Form Responses 1';
+    const destinationSheetName = 'ENO Workbook';
+    const sourceSheet = sheet.getSheetByName(sourceSheetName);
+    const destinationSheet = sheet.getSheetByName(destinationSheetName);
+    const fixtureCodes = sourceSheet.getRange(2,10,rowLength-1).getValues();
+    const intExtValues = sourceSheet.getRange(2,7,rowLength-1).getValues();
+    let fixtureInfo = [];
+    
+    for (let i = 0; i <= fixtureCodes.length-1; i++){
+      code = fixtureCodes[i].toString();
+      intExt = intExtValues[i];
+      switch (code){
+        //[perscriptive measure name,existing lighting type,existing wattage,existing lamps,proposed wattage, proposed lamps,qualifying model number,material cost]
+        case 'F22T8':
+          fixtureInfo.push(["2' Linear LED (T8/T12 2ft Linear Fluorescent Baseline)","T8, Electronic STD Ballast",17,2,7,2,"LOC-2FTT8-7WMCCT(30/35/40/50/65) B"]);
+          break;
+        case 'F23T8':
+          fixtureInfo.push(["2' Linear LED (T8/T12 2ft Linear Fluorescent Baseline)","T8, Electronic STD Ballast",17,3,7,3,"LOC-2FTT8-7WMCCT(30/35/40/50/65) B"]);
+          break;
+        case 'F41T8':
+          fixtureInfo.push(["4' Linear LED (T8/T12 4ft Linear Fluorescent Baseline)","T8, Electronic STD Ballast",32,1,9,1,"LOC-T84FT-9W40KGF B"]);
+          break;
+        case 'F42T8':
+          fixtureInfo.push(["4' Linear LED (T8/T12 4ft Linear Fluorescent Baseline)","T8, Electronic STD Ballast",32,2,9,2,"LOC-T84FT-9W40KGF B"]);
+          break;
+        case 'F43T8':
+          fixtureInfo.push(["4' Linear LED (T8/T12 4ft Linear Fluorescent Baseline)","T8, Electronic STD Ballast",32,3,9,3,"LOC-T84FT-9W40KGF B"]);
+          break;
+        case 'F44T8':
+          fixtureInfo.push(["4' Linear LED (T8/T12 4ft Linear Fluorescent Baseline)","T8, Electronic STD Ballast",32,4,9,4,"LOC-T84FT-9W40KGF B"]);
+          break;
+        case 'FU2EE':
+          fixtureInfo.push(["U-Tube LED (T8/T12 U-Tube Fluorescent Baseline)","T8, Electronic STD Ballast",40,2,9,2,"LOC-T84FT-9W40KGF B"]);
+          break;
+        default:
+          fixtureInfo.push(["UNKNOWN"])
+          break;
+      }//switch
+      k = i+2
+      if(fixtureInfo[i][0] != "UNKNOWN") {
+        //if the fixture is outside it still uses the same name just with "Exterior prepended"
+        if(intExt == 'Exterior'){
+          extMeasure = "Exterior: "+fixtureInfo[i][0];
+          destinationSheet.getRange(k,3).setValue(extMeasure);
+        }
+        else {
+          destinationSheet.getRange(k,3).setValue(fixtureInfo[i][0]);
+        }
+        destinationSheet.getRange(k,6).setValue(fixtureInfo[i][1]);
+        destinationSheet.getRange(k,7).setValue(fixtureInfo[i][2]);
+        destinationSheet.getRange(k,8).setValue(fixtureInfo[i][3]);
+        destinationSheet.getRange(k,10).setValue(fixtureInfo[i][4]);
+        destinationSheet.getRange(k,11).setValue(fixtureInfo[i][5]);
+        destinationSheet.getRange(k,12).setValue('DLC');
+        destinationSheet.getRange(k,13).setValue(fixtureInfo[i][6]);
+      }
+      else {
+        destinationSheet.getRange(k,3).setBackground("red");
+      }  
+    }//for
+}//func
